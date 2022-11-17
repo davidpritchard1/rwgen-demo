@@ -878,12 +878,14 @@ class RainfallModel:
 
         """
         # Point metadata
-        if self.spatial_model and point_metadata is None:
-            raise ValueError('point_metadata must be supplied for a spatial model.')
-        if isinstance(point_metadata, pd.DataFrame):
-            self.point_metadata = point_metadata
-        elif isinstance(point_metadata, str):
-            self.point_metadata = utils.read_csv_(point_metadata)
+        if self.spatial_model:
+            if self.point_metadata is None:
+                if point_metadata is None:
+                    raise ValueError('point_metadata must be supplied for a spatial model.')
+                if isinstance(point_metadata, pd.DataFrame):
+                    self.point_metadata = point_metadata
+                elif isinstance(point_metadata, str):
+                    self.point_metadata = utils.read_csv_(point_metadata)
         if not self.spatial_model:
             self.point_metadata = None
 
