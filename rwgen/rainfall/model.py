@@ -29,6 +29,8 @@ class RainfallModel:
         point_metadata (pandas.DataFrame or str): Metadata (or path to metadata file) on point (site/gauge)
             locations to use for fitting, simulation and/or evaluation for a spatial model only. See Notes for
             details.
+        demo_version (bool): Indicates whether to use the demo version of the model (with narrower parameter bounds
+            for faster fitting for two specific example cases) or not. Default is ``False``.
 
     Notes:
         Seasons can be specified through the ``season_definitions`` argument in several ways:
@@ -106,12 +108,14 @@ class RainfallModel:
             output_folder='./output',
             statistic_definitions=None,
             point_metadata=None,
+            demo_version=False,
     ):
         self.season_definitions = utils.parse_season_definitions(season_definitions)
         self.spatial_model = spatial_model
         self.intensity_distribution = intensity_distribution
         self.output_folder = output_folder
         self.project_name = project_name
+        self.demo_version = demo_version
 
         # Spatial model requires a table of metadata for points
         if self.spatial_model:
@@ -470,6 +474,13 @@ class RainfallModel:
         parameters_to_fit, fixed_parameters, parameter_bounds = utils.define_parameter_bounds(
             parameter_bounds, fixed_parameters, self.parameter_names, default_bounds, self.unique_seasons
         )
+
+        # Make parameter ranges smaller for demo version
+        if self.demo_version:
+            if not self.spatial_model:
+                parameter_bounds = utils._apply_demo_parameter_bounds(parameters_to_fit)
+            else:
+                pass  # fixed + adjusted bounds from the example itself
 
         # Initial parameters are currently only relevant to empirical smoothing method
         if initial_parameters is not None:

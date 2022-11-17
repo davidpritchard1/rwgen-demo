@@ -4,7 +4,7 @@ Example of point NSRP modelling based on the Brize Norton hourly gauge record.
 Script version of nsrp_example.ipynb notebook.
 
 """
-from rwgen.rainfall import model
+import rwgen
 
 # Boilerplate line needed to use multiprocessing in fitting on Windows OS
 if __name__ == '__main__':
